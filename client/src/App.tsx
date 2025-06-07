@@ -7,6 +7,7 @@ import { httpBatchLink } from "@trpc/react-query";
 import { env } from "./lib/utils/env";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ExperienceList from "./features/experiences/components/ExperienceList";
+import InfiniteScroll from "./features/shared/components/InfiniteScroll";
 
 export function App() {
 
@@ -57,14 +58,30 @@ export function App() {
 }
 
 function Index() {
-  const experienceQuery = trpc.experiences.feed.useQuery({})
-
+  // const experienceQuery = trpc.experiences.feed.useQuery({})
+  const experienceQuery = trpc.experiences.feed.useInfiniteQuery(
+    {},
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    },
+  )
 
 
   return (
-    <ExperienceList
-      experiences={experienceQuery.data?.experiences ?? []}
-      isLoading={experienceQuery.isLoading}
-    />
+    // <ExperienceList
+    //   experiences={experienceQuery.data?.experiences ?? []}
+    //   isLoading={experienceQuery.isLoading}
+    // />
+    <InfiniteScroll
+      hasNextPage={experienceQuery.hasNextPage}
+      onLoadMore={experienceQuery.fetchNextPage}
+    >
+      <ExperienceList
+        experiences={experienceQuery.data?.pages.flatMap((page) => page.experiences) ?? []}
+        isLoading={experienceQuery.isLoading}
+        noExperiencesMessage="No experiences found."
+      />
+    </InfiniteScroll>
+
   )
 }
