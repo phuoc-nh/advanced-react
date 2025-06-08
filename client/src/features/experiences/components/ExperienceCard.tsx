@@ -2,6 +2,7 @@ import Card from '@/features/shared/components/ui/Card'
 import React from 'react'
 import { ExperienceForList } from '../type'
 import { LinkIcon, MessageSquare } from 'lucide-react'
+import CommentsSection from '@/features/comments/components/CommentsSection'
 
 type ExperienceCardProps = {
 	experience: ExperienceForList
@@ -17,6 +18,7 @@ export default function ExperienceCard({ experience }: ExperienceCardProps) {
 				<ExperienceCardFooter experience={experience} />
 				<ExperienceCardMeta experience={experience} />
 				<ExperienceCardUserMetricButton experience={experience} />
+				<CommentsSection experienceId={experience.id} commentsCount={experience.commentsCount} />
 			</div>
 
 		</Card>
