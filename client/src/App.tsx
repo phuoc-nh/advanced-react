@@ -11,7 +11,15 @@ import InfiniteScroll from "./features/shared/components/InfiniteScroll";
 
 export function App() {
 
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient({
+    // defaultOptions: {
+    //   mutations: {
+    //     onSuccess: () => {
+    //       queryClient.invalidateQueries();
+    //     }
+    //   }
+    // }
+  }));
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
