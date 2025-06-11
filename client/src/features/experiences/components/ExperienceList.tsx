@@ -2,7 +2,7 @@ import Spinner from '@/features/shared/components/ui/Spinner'
 import { Experience } from '@advanced-react/server/database/schema'
 import React from 'react'
 import ExperienceCard from './ExperienceCard'
-import { ExperienceForList } from '../type'
+import { ExperienceForList } from '../types'
 
 type ExperienceListProps = {
 	experiences: ExperienceForList[]

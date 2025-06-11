@@ -8,4 +8,7 @@ type ExperienceWithCommentCount = Experience & {
 	commentsCount: number
 }
 
+export type ExperienceForDetails = ExperienceWithUser &
+  ExperienceWithCommentCount;
+
 export type ExperienceForList = ExperienceWithUser & ExperienceWithCommentCount
