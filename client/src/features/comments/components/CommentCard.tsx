@@ -4,7 +4,7 @@ import { CommentForList } from '../types';
 import CommentEditingForm from './CommentEditingForm';
 import { Button } from '@/features/shared/components/ui/Button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/features/shared/components/ui/Dialog';
-import { trpc } from '@/trpc';
+import { trpc } from '@/router';
 import { useToast } from '@/features/shared/hooks/useToast';
 
 type CommentCardProps = {

@@ -2,13 +2,12 @@ import { useState } from "react";
 import Navbar from "./features/shared/components/Navbar";
 import { ThemeProvider } from "./features/shared/components/ThemeProvider";
 import { Toaster } from "./features/shared/components/ui/Toaster";
-import { trpc } from "./trpc";
 import { httpBatchLink } from "@trpc/react-query";
 import { env } from "./lib/utils/env";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ExperienceList from "./features/experiences/components/ExperienceList";
 import InfiniteScroll from "./features/shared/components/InfiniteScroll";
-
+import { trpc } from "./router";
 export function App() {
 
   const [queryClient] = useState(() => new QueryClient({

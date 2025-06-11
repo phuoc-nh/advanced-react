@@ -1,4 +1,4 @@
-import { trpc } from '@/trpc'
+import { trpc } from '@/router'
 import { Experience } from '@advanced-react/server/database/schema'
 import React from 'react'
 import CommentList from './CommentList'
