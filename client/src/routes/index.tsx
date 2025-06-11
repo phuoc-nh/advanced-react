@@ -6,11 +6,18 @@ import { trpc } from '@/router'
 
 export const Route = createFileRoute('/')({
 	component: Index,
+	loader: async ({ context: { trpcQueryUtils } }) => {
+		await trpcQueryUtils.experiences.feed.prefetchInfinite({})
+	},
 })
+
+// usually fetch happens after component mounts
+// We can use loader to prefetch data before component mounts
+//  this happens when user clicks on the link to this route
 
 function Index() {
 	// const experienceQuery = trpc.experiences.feed.useQuery({})
-	const experienceQuery = trpc.experiences.feed.useInfiniteQuery(
+	const [{ pages }, experienceQuery] = trpc.experiences.feed.useSuspenseInfiniteQuery( // tell react that this query is already called from route loader
 		{},
 		{
 			getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -28,8 +35,8 @@ function Index() {
 			onLoadMore={experienceQuery.fetchNextPage}
 		>
 			<ExperienceList
-				experiences={experienceQuery.data?.pages.flatMap((page) => page.experiences) ?? []}
-				isLoading={experienceQuery.isLoading}
+				experiences={pages.flatMap((page) => page.experiences) ?? []}
+				isLoading={experienceQuery.isFetchingNextPage}
 				noExperiencesMessage="No experiences found."
 			/>
 		</InfiniteScroll>
