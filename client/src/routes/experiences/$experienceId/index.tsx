@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, notFound } from '@tanstack/react-router'
 import { z } from 'zod'
-import { trpc } from '@/router'
+import { isTRPCClientError, trpc } from '@/router'
 import { ExperienceDetails } from '@/features/experiences/components/ExperienceDetail'
 import CommentsSection from '@/features/comments/components/CommentsSection'
 
@@ -13,9 +13,17 @@ export const Route = createFileRoute('/experiences/$experienceId/')({
   },
   component: ExperiencePage,
   loader: async ({ params, context: { trpcQueryUtils } }) => {
-    await trpcQueryUtils.experiences.byId.ensureData({
-      id: params.experienceId,
-    })
+    try {
+      await trpcQueryUtils.experiences.byId.ensureData({
+        id: params.experienceId,
+      })
+    } catch (error) {
+      if (isTRPCClientError(error) && error.data?.code === 'NOT_FOUND') {
+        throw notFound();
+      }
+
+      throw error;
+    }
   },
 })
 
