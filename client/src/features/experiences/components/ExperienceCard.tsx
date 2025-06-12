@@ -32,7 +32,9 @@ export default function ExperienceCard({ experience }: ExperienceCardProps) {
 type ExperienceCardAvatarProps = Pick<ExperienceCardProps, 'experience'>
 function ExperienceCardAvatar({ experience }: ExperienceCardAvatarProps) {
 	return (
-		<UserAvatar user={experience.user} showName={false} />
+		<Link to='/users/$userId' params={{ userId: experience.user.id }} >
+			<UserAvatar user={experience.user} showName={false} />
+		</Link>
 	)
 }
 
@@ -57,7 +59,10 @@ function ExperienceCardHeader({ experience }: ExperienceCardHeaderProps) {
 
 	return (
 		<div>
-			<div>{experience.user.name}</div>
+			<Link to="/users/$userId" params={{ userId: experience.user.id }} variant={'ghost'}>
+				{/* <UserAvatar user={experience.user} showName={false} /> */}
+				<div>{experience.user.name}</div>
+			</Link>
 			<Link
 				to="/experiences/$experienceId"
 				params={{ experienceId: experience.id }}
