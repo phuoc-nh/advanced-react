@@ -3,6 +3,7 @@ import { Experience } from '@advanced-react/server/database/schema'
 import React from 'react'
 import CommentList from './CommentList'
 import CommentCreateForm from './CommentCreateForm'
+import { ErrorComponent } from '@/features/shared/components/ErrorComponent'
 
 type CommentsSectionProps = {
 	experienceId: Experience['id']
@@ -17,7 +18,7 @@ export default function CommentsSection({ experienceId, commentsCount }: Comment
 	})
 
 	if (commentsQuery.error) {
-		return <div>Error loading comments</div>
+		return <ErrorComponent />;
 	}
 
 	return (

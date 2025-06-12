@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { routeTree } from './routeTree.gen';
 import Spinner from './features/shared/components/ui/Spinner';
+import { ErrorComponent } from './features/shared/components/ErrorComponent';
 
 export const queryClient = new QueryClient()
 
@@ -42,6 +43,7 @@ function createRouter() {
       trpcQueryUtils,
     },
     defaultPendingComponent: () => <div className='flex items-center justify-center'><Spinner /></div>,
+    defaultErrorComponent: ErrorComponent,
     Wrap: function WrapComponent({ children }) {
       return (
         <trpc.Provider client={trpcClient} queryClient={queryClient}>
