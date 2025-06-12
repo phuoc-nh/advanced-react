@@ -6,6 +6,7 @@ import { Button } from '@/features/shared/components/ui/Button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/features/shared/components/ui/Dialog';
 import { trpc } from '@/router';
 import { useToast } from '@/features/shared/hooks/useToast';
+import { UserAvatar } from '@/features/users/components/UserAvatar';
 
 type CommentCardProps = {
 	comment: CommentForList;
@@ -34,7 +35,8 @@ type CommentCardHeaderProps = Pick<CommentCardProps, 'comment'>
 function CommentCardHeader({ comment }: CommentCardHeaderProps) {
 	return (
 		<div className='flex items-center gap-2'>
-			<div>{comment.user.name}</div>
+			<UserAvatar user={comment.user} />
+			{/* <div>{comment.user.name}</div> */}
 			<time className='text-sm text-neutral-500'>
 				. {new Date(comment.createdAt).toLocaleDateString()}
 			</time>

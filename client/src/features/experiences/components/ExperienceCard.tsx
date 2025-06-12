@@ -4,6 +4,7 @@ import { ExperienceForList } from '../types'
 import { LinkIcon, MessageSquare } from 'lucide-react'
 import Link from '@/features/shared/components/ui/Link'
 import { Button } from '@/features/shared/components/ui/Button'
+import { UserAvatar } from '@/features/users/components/UserAvatar'
 
 type ExperienceCardProps = {
 	experience: ExperienceForList
@@ -13,16 +14,25 @@ export default function ExperienceCard({ experience }: ExperienceCardProps) {
 	return (
 		<Card className='overflow-hidden p-0'>
 			<ExperienceCardMedia experience={experience} />
+			<div className='flex items-start gap-4 p-4'>
+				<ExperienceCardAvatar experience={experience} />
 
-			<div className='p-4 w-full space-y-2'>
-				<ExperienceCardHeader experience={experience} />
-				<ExperienceCardFooter experience={experience} />
-				<ExperienceCardMeta experience={experience} />
-				<ExperienceCardUserMetricButton experience={experience} />
-				{/* <CommentsSection experienceId={experience.id} commentsCount={experience.commentsCount} /> */}
+				<div className='w-full space-y-2'>
+					<ExperienceCardHeader experience={experience} />
+					<ExperienceCardFooter experience={experience} />
+					<ExperienceCardMeta experience={experience} />
+					<ExperienceCardUserMetricButton experience={experience} />
+				</div>
 			</div>
 
 		</Card>
+	)
+}
+
+type ExperienceCardAvatarProps = Pick<ExperienceCardProps, 'experience'>
+function ExperienceCardAvatar({ experience }: ExperienceCardAvatarProps) {
+	return (
+		<UserAvatar user={experience.user} showName={false} />
 	)
 }
 
