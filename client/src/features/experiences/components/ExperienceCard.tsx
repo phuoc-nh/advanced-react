@@ -1,11 +1,14 @@
-import Card from '@/features/shared/components/ui/Card'
-import React from 'react'
-import { ExperienceForList } from '../types'
 import { LinkIcon, MessageSquare } from 'lucide-react'
-import Link from '@/features/shared/components/ui/Link'
-import { Button } from '@/features/shared/components/ui/Button'
-import { UserAvatar } from '@/features/users/components/UserAvatar'
+import React from 'react'
+
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import { Button } from '@/features/shared/components/ui/Button'
+import Card from '@/features/shared/components/ui/Card'
+import Link from '@/features/shared/components/ui/Link'
+import { UserAvatar } from '@/features/users/components/UserAvatar'
+
+import { ExperienceForList } from '../types'
+import ExperienceAttendButton from './ExperienceAttendButton'
 import { ExperienceDeleteDialog } from './ExperienceDeleteDialog'
 
 type ExperienceCardProps = {
@@ -138,6 +141,10 @@ function ExperienceCardActionButtons({
 		return <ExperienceCardOwnerButtons experience={experience} />;
 	}
 
+	if (currentUser) {
+		return <ExperienceAttendButton experienceId={experience.id} isAttending={experience.isAttending} />
+	}
+
 	return null;
 }
 
@@ -157,6 +164,7 @@ function ExperienceCardOwnerButtons({
 				</Link>
 			</Button>
 			<ExperienceDeleteDialog experience={experience} />
+			<ExperienceAttendButton experienceId={experience.id} isAttending={experience.isAttending} />
 		</div>
 	);
 }

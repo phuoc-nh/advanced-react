@@ -1,12 +1,14 @@
 import { LinkIcon } from "lucide-react";
 
-import Card from "@/features/shared/components/ui/Card";
-import { ExperienceForDetails } from "../types";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { Button } from "@/features/shared/components/ui/Button";
+import Card from "@/features/shared/components/ui/Card";
 import Link from "@/features/shared/components/ui/Link";
-import { ExperienceDeleteDialog } from "./ExperienceDeleteDialog";
 import { router } from "@/router";
+
+import { ExperienceForDetails } from "../types";
+import ExperienceAttendButton from "./ExperienceAttendButton";
+import { ExperienceDeleteDialog } from "./ExperienceDeleteDialog";
 
 
 type ExperienceDetailsProps = {
@@ -104,6 +106,10 @@ function ExperienceCardActionButtons({
 
 	if (isPostOwner) {
 		return <ExperienceCardOwnerButtons experience={experience} />;
+	}
+
+	if (currentUser) {
+		return <ExperienceAttendButton experienceId={experience.id} isAttending={experience.isAttending} />
 	}
 
 	return null;

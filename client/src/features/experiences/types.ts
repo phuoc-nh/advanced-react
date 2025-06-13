@@ -8,7 +8,14 @@ type ExperienceWithCommentCount = Experience & {
 	commentsCount: number
 }
 
-export type ExperienceForDetails = ExperienceWithUser &
-  ExperienceWithCommentCount;
+export type ExperienceForDetails = ExperienceWithUser
+	& ExperienceWithUserContext
+	& ExperienceWithCommentCount;
 
-export type ExperienceForList = ExperienceWithUser & ExperienceWithCommentCount
+export type ExperienceWithUserContext = Experience & {
+	isAttending: boolean;
+}
+
+export type ExperienceForList = ExperienceWithUser
+	& ExperienceWithCommentCount
+	& ExperienceWithUserContext;
