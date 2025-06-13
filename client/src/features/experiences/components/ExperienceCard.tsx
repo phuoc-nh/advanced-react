@@ -5,6 +5,7 @@ import { LinkIcon, MessageSquare } from 'lucide-react'
 import Link from '@/features/shared/components/ui/Link'
 import { Button } from '@/features/shared/components/ui/Button'
 import { UserAvatar } from '@/features/users/components/UserAvatar'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 
 type ExperienceCardProps = {
 	experience: ExperienceForList
@@ -22,6 +23,7 @@ export default function ExperienceCard({ experience }: ExperienceCardProps) {
 					<ExperienceCardFooter experience={experience} />
 					<ExperienceCardMeta experience={experience} />
 					<ExperienceCardUserMetricButton experience={experience} />
+					<ExperienceCardActionButtons experience={experience} />
 				</div>
 			</div>
 
@@ -107,10 +109,6 @@ type ExperienceCardUserMetricButtonProps = Pick<ExperienceCardProps, 'experience
 
 function ExperienceCardUserMetricButton({ experience }: ExperienceCardUserMetricButtonProps) {
 	return (
-		// <div>
-		// 	<MessageSquare className='h-5 w-5'></MessageSquare>
-		// 	<span>{experience.commentsCount}</span>
-		// </div>
 		<div className="flex items-center gap-2">
 			<Button variant="link" asChild>
 				<Link
@@ -124,4 +122,39 @@ function ExperienceCardUserMetricButton({ experience }: ExperienceCardUserMetric
 			</Button>
 		</div>
 	)
+}
+
+type ExperienceCardActionButtonsProps = Pick<ExperienceCardProps, "experience">;
+
+function ExperienceCardActionButtons({
+	experience,
+}: ExperienceCardActionButtonsProps) {
+	const { currentUser } = useCurrentUser();
+
+	const isPostOwner = currentUser?.id === experience.userId;
+
+	if (isPostOwner) {
+		return <ExperienceCardOwnerButtons experience={experience} />;
+	}
+
+	return null;
+}
+
+type ExperienceCardOwnerButtonsProps = Pick<ExperienceCardProps, "experience">;
+
+function ExperienceCardOwnerButtons({
+	experience,
+}: ExperienceCardOwnerButtonsProps) {
+	return (
+		<div className="flex gap-4">
+			<Button asChild variant="link">
+				<Link
+					to="/experiences/$experienceId/edit"
+					params={{ experienceId: experience.id }}
+				>
+					Edit
+				</Link>
+			</Button>
+		</div>
+	);
 }
