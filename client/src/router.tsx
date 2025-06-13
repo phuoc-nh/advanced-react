@@ -1,4 +1,4 @@
-import { createTRPCQueryUtils, createTRPCReact, getQueryKey, httpBatchLink, TRPCClientError, TRPCLink } from '@trpc/react-query';
+import { createTRPCQueryUtils, createTRPCReact, getQueryKey, httpBatchLink, httpLink, isNonJsonSerializable, splitLink, TRPCClientError, TRPCLink } from '@trpc/react-query';
 import type { AppRouter } from '@advanced-react/server';
 import { useState } from 'react';
 import { env } from './lib/utils/env';
@@ -53,15 +53,45 @@ function getHeaders() {
 export const trpcClient = trpc.createClient({
   links: [
     customLink,
-    httpBatchLink({
-      url: env.VITE_SERVER_BASE_URL,
-      fetch(url, options) {
-        return fetch(url, {
-          ...options,
-          credentials: "include",
-        });
+    // httpBatchLink({ batch link combines multiple requests into a single https request, reducing latency and improving performance
+    // httpBatchLink does not support formData
+    // httpLink({
+    //   url: env.VITE_SERVER_BASE_URL,
+    //   fetch(url, options) {
+    //     return fetch(url, {
+    //       ...options,
+    //       credentials: "include",
+    //     });
+    //   },
+    //   headers: getHeaders(),
+    // }),
+    // conditionally use httpLink or httpBatchLink based on the input type
+    // if the input is normal JSON, use httpBatchLink
+    // otherwise, use httpLink
+    splitLink({
+      condition(op) {
+        return isNonJsonSerializable(op.input);
       },
-      headers: getHeaders(),
+      true: httpLink({
+        url: env.VITE_SERVER_BASE_URL,
+        fetch(url, options) {
+          return fetch(url, {
+            ...options,
+            credentials: "include",
+          });
+        },
+        headers: getHeaders(),
+      }),
+      false: httpBatchLink({
+        url: env.VITE_SERVER_BASE_URL,
+        fetch(url, options) {
+          return fetch(url, {
+            ...options,
+            credentials: "include",
+          });
+        },
+        headers: getHeaders(),
+      }),
     }),
   ],
 });

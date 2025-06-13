@@ -3,6 +3,7 @@ import { ErrorComponent } from '@/features/shared/components/ErrorComponent';
 import InfiniteScroll from '@/features/shared/components/InfiniteScroll';
 import Card from '@/features/shared/components/ui/Card';
 import { UserAvatar } from '@/features/users/components/UserAvatar';
+import { UserProfileButton } from '@/features/users/components/UserProfileButton';
 import { UserProfileHostStats } from '@/features/users/components/UserProfileHostStats';
 import { isTRPCClientError, trpc } from '@/router';
 import { createFileRoute, notFound } from '@tanstack/react-router'
@@ -54,6 +55,7 @@ function UserPage() {
 				{user.bio && (
 					<p className="text-neutral-600 dark:text-neutral-400">{user.bio}</p>
 				)}
+				<UserProfileButton user={user} />
 			</Card>
 
 			<UserProfileHostStats user={user} />

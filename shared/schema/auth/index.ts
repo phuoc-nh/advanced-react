@@ -7,6 +7,7 @@ export const userCredentialsSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters long"),
 });
 
+// this case use zod form-data (zfd) to handle file uploads
 export const userEditSchema = zfd.formData({
   id: zfd.numeric(z.number()),
   name: zfd.text(z.string().min(3, "Name must be at least 3 characters long")),
