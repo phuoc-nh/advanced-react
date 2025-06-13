@@ -8,6 +8,7 @@ import { trpc } from '@/router';
 import { useToast } from '@/features/shared/hooks/useToast';
 import { UserAvatar } from '@/features/users/components/UserAvatar';
 import Link from '@/features/shared/components/ui/Link';
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 
 type CommentCardProps = {
 	comment: CommentForList;
@@ -63,6 +64,7 @@ function CommentCardButtons({ setIsEditing, comment }: CommentCardButtonsProps) 
 	const [isDeleting, setIsDeleting] = useState(false);
 	const utils = trpc.useUtils();
 	const { toast } = useToast();
+	const { currentUser } = useCurrentUser();
 
 	const deleteMutation = trpc.comments.delete.useMutation({
 		onSuccess: async () => {
@@ -88,12 +90,19 @@ function CommentCardButtons({ setIsEditing, comment }: CommentCardButtonsProps) 
 		}
 	})
 
+	const isOwner = currentUser?.id === comment.user.id;
+	const isExperienceOwner = currentUser?.id === comment.experience.userId;
 
+	if (!isOwner && !isExperienceOwner) {
+		return null;
+	}
 
 	return (
 		<div className='flex gap-4'>
-			<Button variant={'link'} onClick={() => setIsEditing(true)}>Edit</Button>
-			<Dialog open={isDeleting} onOpenChange={setIsDeleting}>
+			{isOwner && (
+				<Button variant={'link'} onClick={() => setIsEditing(true)}>Edit</Button>
+			)}
+			{(isOwner || isExperienceOwner) && <Dialog open={isDeleting} onOpenChange={setIsDeleting}>
 				<DialogTrigger asChild>
 					<Button variant="destructive-link">Delete</Button>
 				</DialogTrigger>
@@ -123,7 +132,7 @@ function CommentCardButtons({ setIsEditing, comment }: CommentCardButtonsProps) 
 						</Button>
 					</DialogFooter>
 				</DialogContent>
-			</Dialog>
+			</Dialog>}
 		</div>
 
 	)

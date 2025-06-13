@@ -78,8 +78,8 @@ export const commentRouter = router({
       }));
     }),
 
-  // add: protectedProcedure
-  add: publicProcedure
+  add: protectedProcedure
+  // add: publicProcedure
     .input(
       z.object({
         experienceId: experienceSelectSchema.shape.id,
@@ -100,28 +100,27 @@ export const commentRouter = router({
         });
       }
 
-      const userId = 1
 
       const comment = await db
         .insert(commentsTable)
         .values({
           experienceId: input.experienceId,
           content: input.content,
-          // userId: ctx.user.id,
-          userId: userId,
+          userId: ctx.user.id,
+          // userId: userId,
           createdAt: now,
           updatedAt: now,
         })
         .returning();
 
-      // if (experience.userId !== ctx.user.id) {
-      if (experience.userId !== userId) {
+      if (experience.userId !== ctx.user.id) {
+      // if (experience.userId !== userId) {
         await db.insert(notificationsTable).values({
           type: "user_commented_experience",
           commentId: comment[0].id,
           experienceId: input.experienceId,
-          // fromUserId: ctx.user.id,
-          fromUserId: userId,
+          fromUserId: ctx.user.id,
+          // fromUserId: userId,
           userId: experience.userId,
           createdAt: now,
         });
@@ -130,8 +129,8 @@ export const commentRouter = router({
       return comment[0];
     }),
 
-  // edit: protectedProcedure
-  edit: publicProcedure
+  edit: protectedProcedure
+  // edit: publicProcedure
     .input(
       z.object({
         id: commentSelectSchema.shape.id,
@@ -149,9 +148,8 @@ export const commentRouter = router({
           message: "Comment not found",
         });
       }
-      const userId = 1
-      // if (comment.userId !== ctx.user.id) {
-      if (comment.userId !== userId) {
+      if (comment.userId !== ctx.user.id) {
+      // if (comment.userId !== userId) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You can only edit your own comments",
@@ -172,8 +170,8 @@ export const commentRouter = router({
       return updatedComments[0];
     }),
 
-  // delete: protectedProcedure
-  delete: publicProcedure
+  delete: protectedProcedure
+  // delete: publicProcedure
     .input(z.object({ id: commentSelectSchema.shape.id }))
     .mutation(async ({ ctx, input }) => {
       const comment = await db.query.commentsTable.findFirst({
@@ -190,12 +188,9 @@ export const commentRouter = router({
       const experience = await db.query.experiencesTable.findFirst({
         where: eq(experiencesTable.id, comment.experienceId),
       });
-      const userId = 1
       if (
-        // comment.userId !== ctx.user.id &&
-        // experience?.userId !== ctx.user.id
-        comment.userId !== userId &&
-        experience?.userId !== userId
+        comment.userId !== ctx.user.id &&
+        experience?.userId !== ctx.user.id
       ) {
         throw new TRPCError({
           code: "FORBIDDEN",

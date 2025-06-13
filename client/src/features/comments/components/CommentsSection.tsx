@@ -4,6 +4,7 @@ import React from 'react'
 import CommentList from './CommentList'
 import CommentCreateForm from './CommentCreateForm'
 import { ErrorComponent } from '@/features/shared/components/ErrorComponent'
+import Card from '@/features/shared/components/ui/Card'
 
 type CommentsSectionProps = {
 	experienceId: Experience['id']
@@ -27,7 +28,9 @@ export default function CommentsSection({ experienceId, commentsCount }: Comment
 				Comments ({commentsCount})
 			</h3>
 
-			<CommentCreateForm experienceId={experienceId} />
+			<Card>
+				<CommentCreateForm experienceId={experienceId} />
+			</Card>
 			<CommentList
 				comments={commentsQuery.data ?? []}
 				isLoading={commentsQuery.isLoading}
