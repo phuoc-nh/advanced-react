@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useExperienceMutations } from "../hooks/useExperienceMutations";
+import FileInput from "@/features/shared/components/ui/FileInput";
 
 type ExperienceFormData = z.infer<typeof experienceValidationSchema>;
 
@@ -98,6 +99,22 @@ export function ExperienceForm({
 							<FormLabel>Link</FormLabel>
 							<FormControl>
 								<Input {...field} value={field.value ?? ""} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="image"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Photo</FormLabel>
+							<FormControl>
+								<FileInput accept="image/*" onChange={(event) => {
+									field.onChange(event.target.files?.[0]);
+								}} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
