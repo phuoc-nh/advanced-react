@@ -1,4 +1,4 @@
-import { LinkIcon, MessageSquare } from 'lucide-react'
+import { LinkIcon, MessageSquare, Users } from 'lucide-react'
 import React from 'react'
 
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
@@ -28,6 +28,7 @@ export default function ExperienceCard({ experience }: ExperienceCardProps) {
 					<ExperienceCardMeta experience={experience} />
 					<ExperienceCardUserMetricButton experience={experience} />
 					<ExperienceCardActionButtons experience={experience} />
+
 				</div>
 			</div>
 
@@ -114,6 +115,19 @@ type ExperienceCardUserMetricButtonProps = Pick<ExperienceCardProps, 'experience
 function ExperienceCardUserMetricButton({ experience }: ExperienceCardUserMetricButtonProps) {
 	return (
 		<div className="flex items-center gap-2">
+			<Button variant="link" asChild>
+				<Link
+					to="/experiences/$experienceId/attendees"
+					params={{ experienceId: experience.id }}
+					variant="ghost"
+				>
+					<Users className="h-5 w-5" />
+					<span className="flex items-center gap-1">
+						{experience.attendeesCount}
+					</span>
+				</Link>
+			</Button>
+
 			<Button variant="link" asChild>
 				<Link
 					to="/experiences/$experienceId"

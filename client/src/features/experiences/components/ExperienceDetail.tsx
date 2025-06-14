@@ -9,6 +9,7 @@ import { router } from "@/router";
 import { ExperienceForDetails } from "../types";
 import ExperienceAttendButton from "./ExperienceAttendButton";
 import { ExperienceDeleteDialog } from "./ExperienceDeleteDialog";
+import { UserAvatarList } from "@/features/users/components/UserAvatarList";
 
 
 type ExperienceDetailsProps = {
@@ -24,6 +25,9 @@ export function ExperienceDetails({ experience }: ExperienceDetailsProps) {
 				<ExperienceDetailsContent experience={experience} />
 				<ExperienceDetailsMeta experience={experience} />
 				<ExperienceCardActionButtons experience={experience} />
+				<div className="border-t-2 border-neutral-200 pt-4 dark:border-neutral-800">
+					<ExperienceDetailsAttendees experience={experience} />
+				</div>
 			</div>
 		</Card>
 	);
@@ -136,6 +140,47 @@ function ExperienceCardOwnerButtons({
 					router.navigate({ to: '/' });
 				}}
 			/>
+		</div>
+	);
+}
+
+
+type ExperienceDetailsAttendeesProps = Pick<
+	ExperienceDetailsProps,
+	"experience"
+>;
+
+function ExperienceDetailsAttendees({
+	experience,
+}: ExperienceDetailsAttendeesProps) {
+	return (
+		<div className="space-y-4">
+			<div className="space-y-2">
+				<h3 className="font-medium">Host</h3>
+				<UserAvatarList users={[experience.user]} totalCount={1} />
+			</div>
+
+			<div className="space-y-2">
+				<Link
+					to="/experiences/$experienceId/attendees"
+					params={{ experienceId: experience.id }}
+					variant="secondary"
+				>
+					<h3 className="font-medium">
+						Attendees ({experience.attendeesCount})
+					</h3>
+				</Link>
+				{experience.attendeesCount > 0 ? (
+					<UserAvatarList
+						users={experience.attendees}
+						totalCount={experience.attendeesCount}
+					/>
+				) : (
+					<p className="text-neutral-600 dark:text-neutral-400">
+						Be the first to attend!
+					</p>
+				)}
+			</div>
 		</div>
 	);
 }
