@@ -5,11 +5,12 @@ import Card from '@/features/shared/components/ui/Card';
 import { UserAvatar } from '@/features/users/components/UserAvatar';
 import { UserProfileButton } from '@/features/users/components/UserProfileButton';
 import { UserProfileHostStats } from '@/features/users/components/UserProfileHostStats';
+import { UserProfileStats } from '@/features/users/components/UserProfileStats';
 import { isTRPCClientError, trpc } from '@/router';
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { z } from 'zod'
 
-export const Route = createFileRoute('/users/$userId')({
+export const Route = createFileRoute('/users/$userId/')({
 	params: {
 		parse: (params) => ({
 			userId: z.coerce.number().parse(params.userId),
@@ -55,6 +56,7 @@ function UserPage() {
 				{user.bio && (
 					<p className="text-neutral-600 dark:text-neutral-400">{user.bio}</p>
 				)}
+				<UserProfileStats user={user} />
 				<UserProfileButton user={user} />
 			</Card>
 
