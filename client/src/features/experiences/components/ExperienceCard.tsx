@@ -35,7 +35,8 @@ export default function ExperienceCard({ experience }: ExperienceCardProps) {
 		</Card>
 	)
 }
-
+// Separated components for better readability and maintainability
+// Follows Single Responsibility Principle (SRP)
 type ExperienceCardAvatarProps = Pick<ExperienceCardProps, 'experience'>
 function ExperienceCardAvatar({ experience }: ExperienceCardAvatarProps) {
 	return (

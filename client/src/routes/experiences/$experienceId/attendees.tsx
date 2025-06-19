@@ -59,6 +59,9 @@ function ExperienceAttendeesPage() {
 				<UserList
 					users={pages.flatMap((page) => page.attendees)}
 					isLoading={attendeesQuery.isFetchingNextPage}
+					// this is called Open/Close principle
+					// Open to extension, close to modification
+					// Right component is flexible to be changed without modifying the UserList component
 					rightComponent={(user) => (
 						<UserFollowButton targetUserId={user.id} isFollowing={user.isFollowing} />
 					)}

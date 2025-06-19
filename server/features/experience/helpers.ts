@@ -1,3 +1,8 @@
+// Wrap all database queries in a single file (usually called repository)
+// This is Dependency Inversion Principle
+// Code base is not directly dependent on Drizzle ORM, but on the repository
+// This allows flexibility in changing the database layer in the future and easily write uint tests
+
 import { and, count, eq } from "drizzle-orm";
 
 import { db } from "../../database";
