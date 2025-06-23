@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4caa19f6-5f40-4028-be04-dcdf083e70c5",
+  "id": "1519fe49-c710-4f0e-9b9a-d45a72901209",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "user_follows": {
@@ -471,6 +471,65 @@
           "name": "experience_favorites_experience_id_user_id_pk"
         }
       },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "experience_feed": {
+      "name": "experience_feed",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "experience_id": {
+          "name": "experience_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "experiences_feed_user_id_idx": {
+          "name": "experiences_feed_user_id_idx",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "experience_feed_user_id_users_id_fk": {
+          "name": "experience_feed_user_id_users_id_fk",
+          "tableFrom": "experience_feed",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "experience_feed_experience_id_experiences_id_fk": {
+          "name": "experience_feed_experience_id_experiences_id_fk",
+          "tableFrom": "experience_feed",
+          "tableTo": "experiences",
+          "columnsFrom": [
+            "experience_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     },

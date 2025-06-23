@@ -16,6 +16,7 @@ import {
   experienceTagsTable,
   notificationsTable,
   tagSelectSchema,
+  userFollowsTable
 } from "../../database/schema";
 import { protectedProcedure, publicProcedure, router } from "../../trpc";
 import { DEFAULT_EXPERIENCE_LIMIT } from "../../utils/constants";
@@ -91,7 +92,7 @@ export const experienceRouter = router({
       };
     }),
 
-  feed: publicProcedure
+  feed: protectedProcedure
     .input(
       z.object({
         limit: z.number().optional(),
@@ -118,9 +119,20 @@ export const experienceRouter = router({
       const limit = input?.limit ?? DEFAULT_EXPERIENCE_LIMIT;
       const cursor = input?.cursor ?? 0;
 
+      const followees = await db.query.userFollowsTable.findMany({
+        where: eq(
+          userFollowsTable.followerId,
+          ctx.user?.id,
+        )
+      });
+
+      // later we only fetch experiences from followees
+      // console.log("Followees:", followees);
+
       const experiences = await db.query.experiencesTable.findMany({
         limit,
         offset: cursor,
+        where: inArray(experiencesTable.id, followees.map((f) => f.followingId)),
         with: {
           user: {
             columns: {
@@ -131,6 +143,10 @@ export const experienceRouter = router({
         },
         // orderBy: desc(experiencesTable.createdAt),
       });
+      console.log("experiences:", experiences.length);
+      
+
+      
 
       const commentsCountResults = await Promise.all(
         experiences.map((experience) =>

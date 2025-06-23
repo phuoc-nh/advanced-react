@@ -118,3 +118,20 @@ export const experienceFavoriteSelectSchema = createSelectSchema(
   experienceFavoritesTable,
 );
 export type ExperienceFavorite = typeof experienceFavoritesTable.$inferSelect;
+
+export const experienceFeed = sqliteTable(
+  'experience_feed',
+  {
+    userId: int('user_id').notNull()
+      .references(() => usersTable.id, { onDelete: 'cascade' }),
+    experienceId: int('experience_id')
+      .notNull()
+      .references(() => experiencesTable.id, { onDelete: 'cascade' }),
+  },
+  (table) => ({
+    experiences_feed_user_id_idx: index("experiences_feed_user_id_idx").on(table.userId),
+  }),
+)
+
+export const experienceFeedSelectSchema = createSelectSchema(experienceFeed);
+export type ExperienceFeed = typeof experienceFeed.$inferSelect;

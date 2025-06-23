@@ -64,6 +64,14 @@ CREATE TABLE `experience_favorites` (
 --> statement-breakpoint
 CREATE INDEX `experience_favorites_experience_id_idx` ON `experience_favorites` (`experience_id`);--> statement-breakpoint
 CREATE INDEX `experience_favorites_user_id_idx` ON `experience_favorites` (`user_id`);--> statement-breakpoint
+CREATE TABLE `experience_feed` (
+	`user_id` integer NOT NULL,
+	`experience_id` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`experience_id`) REFERENCES `experiences`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE INDEX `experiences_feed_user_id_idx` ON `experience_feed` (`user_id`);--> statement-breakpoint
 CREATE TABLE `experience_tags` (
 	`experience_id` integer NOT NULL,
 	`tag_id` integer NOT NULL,

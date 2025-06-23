@@ -13,6 +13,7 @@ import {
   tagsTable,
   userFollowsTable,
   usersTable,
+  experienceFeed
 } from "./schema";
 
 import { db } from ".";
@@ -128,7 +129,7 @@ async function seed() {
     const postUser = users[0];
 
     // 5% chance this experience will be attributed to the demo user
-    const experienceUserId = Math.random() < 0.05 ? demoUser.id : postUser.id;
+    const experienceUserId = Math.random() < 0.99 ? demoUser.id : postUser.id;
 
     // Add random location to each experience
     const randomLocation =
@@ -200,6 +201,12 @@ async function seed() {
               .toISOString(),
           })
           .returning();
+        
+        // Add to feed
+        await db.insert(experienceFeed).values({
+          userId: attendee.id,
+          experienceId: experience.id,
+        });
 
         // Create notification for the experience owner
         await db.insert(notificationsTable).values({
