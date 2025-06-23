@@ -5,6 +5,7 @@ import {
   commentsTable,
   experienceAttendeesTable,
   experienceFavoritesTable,
+  experienceFeed,
   experiencesTable,
   experienceTagsTable,
   notificationsTable,
@@ -142,3 +143,13 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
     relationName: "fromUser",
   }),
 }));
+
+export const experienceFeedRelations = relations(
+  experienceFeed,
+  ({ one }) => ({
+    experience: one(experiencesTable, {
+      fields: [experienceFeed.experienceId],
+      references: [experiencesTable.id],
+    }),
+  })
+);

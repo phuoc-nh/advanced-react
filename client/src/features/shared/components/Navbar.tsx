@@ -1,4 +1,4 @@
-import { Home, Search, Settings, User } from "lucide-react";
+import { Home, Plus, Search, Settings, User } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import Link from "./ui/Link";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
@@ -38,6 +38,17 @@ export default function Navigation() {
     >
       <User className="h-6 w-6" />
       Profile
+    </Link>}
+
+    {currentUser && <Link
+      to="/experiences/create"
+      params={{ userId: currentUser.id }}
+      variant={'ghost'}
+      className={navLinkClassName}
+      activeProps={{ className: activeNavLinkClassName }}
+    >
+      <Plus className="h-6 w-6" />
+      New Experience
     </Link>}
 
     {currentUser ? (

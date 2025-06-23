@@ -110,6 +110,8 @@ async function seed() {
     },
   ];
 
+ 
+
   // Create other users and experiences
   for (let i = 0; i < 100; i++) {
     // Creates fake user
@@ -149,6 +151,33 @@ async function seed() {
         updatedAt: new Date().toISOString(),
       })
       .returning();
+    
+    
+    //  // Add to feed for own user
+    // await db.insert(experienceFeed).values({
+    //   userId: experienceUserId,
+    //   experienceId: experience.id,
+    // });
+
+    // // // get followers of the attendee
+    // const followers = await db.query.userFollowsTable.findMany({
+    //   where: (table, { eq }) => eq(table.followingId, experienceUserId),
+    //   columns: {
+    //     followerId: true,
+    //   },
+    // });
+
+    // // // Prepare bulk insert values
+    // const feedInserts = followers.map((follower) => ({
+    //   userId: follower.followerId,
+    //   experienceId: experience.id,
+    // }));
+
+    // // // Bulk insert
+    // if (feedInserts.length > 0) {
+    //   await db.insert(experienceFeed).values(feedInserts);
+    // }
+  
 
     // Add 1-4 random tags to each experience
     const numberOfTags = Math.floor(Math.random() * 4) + 1;
@@ -170,8 +199,50 @@ async function seed() {
     }
   }
 
+   const users = await db.query.usersTable.findMany();
+   // Add random follows between users
+  // Each user will follow between 5-15 random users
+  for (const user of users) {
+    const numberOfFollows = Math.floor(Math.random() * 11) + 5; // Random number between 5-15
+    const shuffledUsers = [...users].sort(() => Math.random() - 0.5);
+
+    for (let i = 0; i < numberOfFollows && i < shuffledUsers.length; i++) {
+      const userToFollow = shuffledUsers[i];
+
+      // Don't follow yourself
+      if (userToFollow.id === user.id) {
+        continue;
+      }
+
+      try {
+        await db.insert(userFollowsTable).values({
+          followerId: user.id,
+          followingId: userToFollow.id,
+          createdAt: faker.date
+            .between({
+              from: user.createdAt,
+              to: new Date(),
+            })
+            .toISOString(),
+        });
+
+        // Create notification for the user being followed
+        await db.insert(notificationsTable).values({
+          type: "user_followed_user",
+          fromUserId: user.id,
+          userId: userToFollow.id,
+          createdAt: new Date().toISOString(),
+        });
+      } catch {
+        // Ignore duplicate follows
+        continue;
+      }
+    }
+  }
+  
+
   // Add random attendees to experiences and create notifications
-  const users = await db.query.usersTable.findMany();
+  
   const experiences = await db.query.experiencesTable.findMany();
 
   for (const experience of experiences) {
@@ -202,11 +273,7 @@ async function seed() {
           })
           .returning();
         
-        // Add to feed
-        await db.insert(experienceFeed).values({
-          userId: attendee.id,
-          experienceId: experience.id,
-        });
+       
 
         // Create notification for the experience owner
         await db.insert(notificationsTable).values({
@@ -287,43 +354,34 @@ async function seed() {
     }
   }
 
-  // Add random follows between users
-  // Each user will follow between 5-15 random users
-  for (const user of users) {
-    const numberOfFollows = Math.floor(Math.random() * 11) + 5; // Random number between 5-15
-    const shuffledUsers = [...users].sort(() => Math.random() - 0.5);
 
-    for (let i = 0; i < numberOfFollows && i < shuffledUsers.length; i++) {
-      const userToFollow = shuffledUsers[i];
+  // Add feed entries based on experiences
+  for (const experience of experiences) {
+    const experienceUserId = experience.userId;
 
-      // Don't follow yourself
-      if (userToFollow.id === user.id) {
-        continue;
-      }
+    // Add to feed for own user
+    await db.insert(experienceFeed).values({
+      userId: experienceUserId,
+      experienceId: experience.id,
+    });
 
-      try {
-        await db.insert(userFollowsTable).values({
-          followerId: user.id,
-          followingId: userToFollow.id,
-          createdAt: faker.date
-            .between({
-              from: user.createdAt,
-              to: new Date(),
-            })
-            .toISOString(),
-        });
+    // Get followers of the attendee
+    const followers = await db.query.userFollowsTable.findMany({
+      where: (table, { eq }) => eq(table.followingId, experienceUserId),
+      columns: {
+        followerId: true,
+      },
+    });
 
-        // Create notification for the user being followed
-        await db.insert(notificationsTable).values({
-          type: "user_followed_user",
-          fromUserId: user.id,
-          userId: userToFollow.id,
-          createdAt: new Date().toISOString(),
-        });
-      } catch {
-        // Ignore duplicate follows
-        continue;
-      }
+    // Prepare bulk insert values
+    const feedInserts = followers.map((follower) => ({
+      userId: follower.followerId,
+      experienceId: experience.id,
+    }));
+
+    // Bulk insert
+    if (feedInserts.length > 0) {
+      await db.insert(experienceFeed).values(feedInserts);
     }
   }
 }

@@ -3,7 +3,7 @@ import {
   experienceValidationSchema,
 } from "@advanced-react/shared/schema/experience";
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, gte, inArray, like, or } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, like, or, asc } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "../../database";
@@ -16,7 +16,8 @@ import {
   experienceTagsTable,
   notificationsTable,
   tagSelectSchema,
-  userFollowsTable
+  userFollowsTable,
+  experienceFeed
 } from "../../database/schema";
 import { protectedProcedure, publicProcedure, router } from "../../trpc";
 import { DEFAULT_EXPERIENCE_LIMIT } from "../../utils/constants";
@@ -119,20 +120,23 @@ export const experienceRouter = router({
       const limit = input?.limit ?? DEFAULT_EXPERIENCE_LIMIT;
       const cursor = input?.cursor ?? 0;
 
-      const followees = await db.query.userFollowsTable.findMany({
+      const feed = await db.query.experienceFeed.findMany({
         where: eq(
-          userFollowsTable.followerId,
+          experienceFeed.userId,
           ctx.user?.id,
-        )
+        ),
+        // columns: {
+        //   experienceId: true,
+        // },
       });
 
-      // later we only fetch experiences from followees
-      // console.log("Followees:", followees);
 
+      // later we only fetch experiences from followees
+      console.log("Feeds:", feed);
       const experiences = await db.query.experiencesTable.findMany({
         limit,
         offset: cursor,
-        where: inArray(experiencesTable.id, followees.map((f) => f.followingId)),
+        where: inArray(experiencesTable.id, feed.map((f) => f.experienceId)),
         with: {
           user: {
             columns: {
@@ -143,10 +147,10 @@ export const experienceRouter = router({
         },
         // orderBy: desc(experiencesTable.createdAt),
       });
-      console.log("experiences:", experiences.length);
+      console.log("experiences:", experiences);
       
-
-      
+      // const f = await db.query.userFollowsTable.findMany();
+      // console.log("Follows:", f);
 
       const commentsCountResults = await Promise.all(
         experiences.map((experience) =>
@@ -561,6 +565,72 @@ export const experienceRouter = router({
 
       return experiences[0];
     }),
+  
+  create: protectedProcedure
+    .input(experienceValidationSchema)
+    .mutation(async ({ ctx, input }) => {
+  
+      let imagePath = null;
+      if (input.image) {
+        imagePath = await writeFile(input.image);
+      }
+
+      const [experience] = await db
+        .insert(experiencesTable)
+        .values({
+          title: input.title,
+          content: input.content,
+          scheduledAt: input.scheduledAt,
+          url: input.url,
+          imageUrl: imagePath,
+          location: JSON.stringify(input.location),
+          userId: ctx.user.id,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        })
+        .returning();
+      
+      // put this into new feed of followers
+      // This will be handled by a background worker, which mainly reduces the load on the server
+      const followers = await db.query.userFollowsTable.findMany({
+        where: eq(userFollowsTable.followingId, ctx.user.id),
+        columns: {
+          followerId: true,
+        },
+      });
+      // owner should also see their own experience
+      followers.push({ followerId: ctx.user.id });
+
+      const followerIds = followers.map((f) => f.followerId);
+      if (followerIds.length > 0) {
+        await db.insert(experienceFeed).values(
+          followerIds.map((followerId) => ({
+            userId: followerId,
+            experienceId: experience.id,
+            createdAt: new Date().toISOString(),
+          })),
+        );
+      }
+      
+      return experience;
+
+      // const experiences = await db
+      //   .update(experiencesTable)
+      //   .set({
+      //     title: input.title,
+      //     content: input.content,
+      //     scheduledAt: input.scheduledAt,
+      //     url: input.url,
+      //     imageUrl: imagePath,
+      //     location: JSON.stringify(input.location),
+      //     updatedAt: new Date().toISOString(),
+      //   })
+      //   .where(eq(experiencesTable.id, input.id))
+      //   .returning();
+
+      // return experiences[0];
+    }),
+
 
   delete: protectedProcedure
     .input(z.object({ id: experienceSelectSchema.shape.id }))

@@ -10,6 +10,9 @@ type ExperienceMutationsOptions = {
 	};
 	delete?: {
 		onSuccess?: (id: Experience['id']) => void;
+	},
+	create?: {
+		onSuccess?: (id: Experience['id']) => void;
 	}
 };
 
@@ -34,6 +37,26 @@ export function useExperienceMutations(options: ExperienceMutationsOptions = {})
 		onError: (error) => {
 			toast({
 				title: "Error editing experience",
+				description: error.message,
+				variant: "destructive",
+			})
+		}
+	})
+
+	const createMutation = trpc.experiences.create.useMutation({
+		onSuccess: async ({id}) => {
+			await utils.experiences.byId.invalidate({ id })
+			toast({
+				title: "Experience created successfully",
+				description: "Your experience has been created.",
+				variant: "success",
+			})
+
+			options.create?.onSuccess?.(id)
+		},
+		onError: (error) => {
+			toast({
+				title: "Error creating experience",
 				description: error.message,
 				variant: "destructive",
 			})
@@ -290,5 +313,6 @@ export function useExperienceMutations(options: ExperienceMutationsOptions = {})
 		deleteMutation,
 		attendMutation,
 		unattendMutation,
+		createMutation
 	}
 }
