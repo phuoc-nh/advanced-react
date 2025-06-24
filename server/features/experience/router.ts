@@ -30,6 +30,7 @@ import {
   getExperienceTags,
   getExperienceUserContext,
 } from "./helpers";
+import { experienceQueue } from "../../producer/experienceProducer";
 
 export const experienceRouter = router({
   byId: publicProcedure
@@ -145,18 +146,6 @@ export const experienceRouter = router({
 
 
       // later we only fetch experiences from followees
-      console.log("Feeds:", feed);
-  //     [
-  // {
-  //   userId: 1,
-  //   experienceId: 105,
-  //   experience: {
-  //     id: 105,
-  //     title: 'Create Experience',
-  //     content: 'Create Experience\r\n',
-  //     user: [Object]
-  //   }
-  // },
       const experiences = feed.map((f) => f.experience);
 
       // const experiences = await db.query.experiencesTable.findMany({
@@ -616,7 +605,11 @@ export const experienceRouter = router({
           updatedAt: new Date().toISOString(),
         })
         .returning();
-      
+      console.log("Adding Experience message to queue: ", experience.id);
+      experienceQueue.add("newExperience", {
+        userId: ctx.user.id,
+        experienceId: experience.id,
+      });
       // put this into new feed of followers
       // This will be handled by a background worker, which mainly reduces the load on the server
       const followers = await db.query.userFollowsTable.findMany({
