@@ -121,33 +121,60 @@ export const experienceRouter = router({
       const cursor = input?.cursor ?? 0;
 
       const feed = await db.query.experienceFeed.findMany({
+        offset: cursor,
+        limit,
+        orderBy: desc(experienceFeed.experienceId),
         where: eq(
           experienceFeed.userId,
           ctx.user?.id,
         ),
-        // columns: {
-        //   experienceId: true,
-        // },
+        with: {
+          experience: {
+            with: {
+              user: {
+                columns: {
+                  password: false,
+                  email: false,
+                },
+              },
+            },
+          },
+        },
       });
+
 
 
       // later we only fetch experiences from followees
       console.log("Feeds:", feed);
-      const experiences = await db.query.experiencesTable.findMany({
-        limit,
-        offset: cursor,
-        where: inArray(experiencesTable.id, feed.map((f) => f.experienceId)),
-        with: {
-          user: {
-            columns: {
-              password: false,
-              email: false,
-            },
-          },
-        },
-        // orderBy: desc(experiencesTable.createdAt),
-      });
-      console.log("experiences:", experiences);
+  //     [
+  // {
+  //   userId: 1,
+  //   experienceId: 105,
+  //   experience: {
+  //     id: 105,
+  //     title: 'Create Experience',
+  //     content: 'Create Experience\r\n',
+  //     user: [Object]
+  //   }
+  // },
+      const experiences = feed.map((f) => f.experience);
+
+      // const experiences = await db.query.experiencesTable.findMany({
+      //   limit,
+      //   offset: cursor,
+      //   where: inArray(experiencesTable.id, feed.map((f) => f.experienceId)),
+      //   with: {
+      //     user: {
+      //       columns: {
+      //         password: false,
+      //         email: false,
+      //       },
+      //     },
+      //   },
+      //   // orderBy: desc(experiencesTable.createdAt),
+      // });
+      // console.log("experiences:", experiences);
+      // console.log("experiences:", experiences.length);
       
       // const f = await db.query.userFollowsTable.findMany();
       // console.log("Follows:", f);
