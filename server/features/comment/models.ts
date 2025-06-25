@@ -1,25 +1,26 @@
 import {
   index,
-  int,
+  integer,
+  pgTable,
   primaryKey,
-  sqliteTable,
+  serial,
   text,
-} from "drizzle-orm/sqlite-core";
+} from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { usersTable } from "../auth/models";
 import { experiencesTable } from "../experience/models";
 
-export const commentsTable = sqliteTable(
+export const commentsTable = pgTable(
   "comments",
   {
-    id: int("id").primaryKey({ autoIncrement: true }),
+    id: serial('id').primaryKey(),
     content: text("content").notNull(),
 
-    experienceId: int("experience_id")
+    experienceId: integer("experience_id")
       .notNull()
       .references(() => experiencesTable.id, { onDelete: "cascade" }),
-    userId: int("user_id")
+    userId: integer("user_id")
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
 
@@ -38,13 +39,13 @@ export const commentInsertSchema = createInsertSchema(commentsTable);
 
 export type Comment = typeof commentsTable.$inferSelect;
 
-export const commentLikesTable = sqliteTable(
+export const commentLikesTable = pgTable(
   "comment_likes",
   {
-    commentId: int("comment_id")
+    commentId: integer("comment_id")
       .notNull()
       .references(() => commentsTable.id, { onDelete: "cascade" }),
-    userId: int("user_id")
+    userId: integer("user_id")
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
     createdAt: text("created_at").notNull(),

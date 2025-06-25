@@ -1,5 +1,12 @@
-import { index, int, text } from "drizzle-orm/sqlite-core";
-import { sqliteTable } from "drizzle-orm/sqlite-core";
+import {
+  boolean,
+  index,
+  integer,
+  pgTable,
+  primaryKey,
+  serial,
+  text,
+} from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 
 import { usersTable } from "../auth/models";
@@ -14,27 +21,27 @@ const notificationTypeEnum = [
   "user_kicked_experience",
 ] as const;
 
-export const notificationsTable = sqliteTable(
+export const notificationsTable = pgTable(
   "notifications",
   {
-    id: int().primaryKey({ autoIncrement: true }),
+    id: serial("id").primaryKey(),
     type: text("type", {
       enum: notificationTypeEnum,
     }).notNull(),
-    read: int("read", { mode: "boolean" }).notNull().default(false),
+    read: boolean().notNull().default(false),
 
-    commentId: int("comment_id").references(() => commentsTable.id, {
+    commentId: integer("comment_id").references(() => commentsTable.id, {
       onDelete: "cascade",
     }),
-    experienceId: int("experience_id").references(() => experiencesTable.id, {
+    experienceId: integer("experience_id").references(() => experiencesTable.id, {
       onDelete: "cascade",
     }),
-    fromUserId: int("from_user_id")
+    fromUserId: integer("from_user_id")
       .notNull()
       .references(() => usersTable.id, {
         onDelete: "cascade",
       }),
-    userId: int("user_id").references(() => usersTable.id, {
+    userId: integer("user_id").references(() => usersTable.id, {
       onDelete: "cascade",
     }),
 
