@@ -687,6 +687,8 @@ export const experienceRouter = router({
         where: eq(experiencesTable.id, input.id),
       });
 
+      // throw new Error("Experience attended successfully, but this is a placeholder for the actual notification logic.");
+
       if (!experience) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -722,6 +724,8 @@ export const experienceRouter = router({
         userId: experience.userId,
         createdAt: new Date().toISOString(),
       });
+
+      
 
       return { success: true };
     }),

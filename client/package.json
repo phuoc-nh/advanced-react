@@ -4,7 +4,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@advanced-react/server": "workspace:*",
@@ -43,6 +46,9 @@
   "devDependencies": {
     "@tanstack/router-devtools": "^1.83.0",
     "@tanstack/router-plugin": "^1.83.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/leaflet": "^1.9.16",
     "@types/react": "19.0.1",
     "@types/react-dom": "19.0.1",
@@ -51,8 +57,12 @@
     "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "eslint-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "globals": "^15.11.0",
+    "jsdom": "^26.1.0",
+    "msw": "^2.10.4",
+    "msw-trpc": "^2.0.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "vitest": "^3.2.4"
   }
 }

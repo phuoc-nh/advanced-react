@@ -104,7 +104,7 @@ export function useExperienceMutations(options: ExperienceMutationsOptions = {})
 					}),
 				}
 			}
-
+			console.log("Optimistically updating experience with ID:", id)
 			await Promise.all([
 				// cancel ongoing or in flight queries
 				// we don't want to suddenly receive a response from server and overwrite our optimistic update
@@ -113,10 +113,10 @@ export function useExperienceMutations(options: ExperienceMutationsOptions = {})
 				...(pathUserId ? [utils.experiences.byUserId.cancel({ id: pathUserId })] : []),
 				...(pathQ ? [utils.experiences.search.cancel({ q: pathQ })] : []),
 			])
-
+			console.log("feed cache:", utils.experiences.feed.getInfiniteData({}))
 			const previousData = {
 				byId: utils.experiences.byId.getData({ id }),
-				feed: utils.experiences.feed.getInfiniteData(),
+				feed: utils.experiences.feed.getInfiniteData({}), // Pass empty object like in the query
 				byUserId: pathUserId ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId }) : undefined,
 				search: pathQ ? utils.experiences.search.getInfiniteData({ q: pathQ }) : undefined,
 			}
@@ -172,6 +172,7 @@ export function useExperienceMutations(options: ExperienceMutationsOptions = {})
 					}
 				})
 			}
+			console.log("Previous data before attend mutation:", previousData)
 
 			return {
 				previousData,
@@ -179,8 +180,9 @@ export function useExperienceMutations(options: ExperienceMutationsOptions = {})
 		},
 		onError: (error, { id }, context) => { 
 			// Rollback optimistic update
+			console.error("Rollback context?.previousData:", context?.previousData)
 			utils.experiences.byId.setData({ id }, context?.previousData?.byId)
-			utils.experiences.feed.setInfiniteData({}, context?.previousData?.feed)
+			utils.experiences.feed.setInfiniteData({}, context?.previousData?.feed) // Pass empty object
 			if (pathUserId) {
 				utils.experiences.byUserId.setInfiniteData({ id: pathUserId }, context?.previousData?.byUserId)
 			}
@@ -193,9 +195,10 @@ export function useExperienceMutations(options: ExperienceMutationsOptions = {})
 				description: error.message,
 				variant: "destructive",
 			})
-
-
-		}
+		},
+		onSuccess: async ({ success }) => {
+			console.log("Attend mutation successful:", success)
+		},
 	})
 
 	const unattendMutation = trpc.experiences.unattend.useMutation({
@@ -226,7 +229,7 @@ export function useExperienceMutations(options: ExperienceMutationsOptions = {})
 
 			const previousData = {
 				byId: utils.experiences.byId.getData({ id }),
-				feed: utils.experiences.feed.getInfiniteData(),
+				feed: utils.experiences.feed.getInfiniteData({}), // Pass empty object like in the query
 				byUserId: pathUserId ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId }) : undefined,
 				search: pathQ ? utils.experiences.search.getInfiniteData({ q: pathQ }) : undefined,
 			}
@@ -290,7 +293,7 @@ export function useExperienceMutations(options: ExperienceMutationsOptions = {})
 		onError: (error, { id }, context) => { 
 			// Rollback optimistic update
 			utils.experiences.byId.setData({ id }, context?.previousData?.byId)
-			utils.experiences.feed.setInfiniteData({}, context?.previousData?.feed)
+			utils.experiences.feed.setInfiniteData({}, context?.previousData?.feed) // Pass empty object
 			if (pathUserId) {
 				utils.experiences.byUserId.setInfiniteData({ id: pathUserId }, context?.previousData?.byUserId)
 			}
