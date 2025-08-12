@@ -7,10 +7,12 @@ services:
     buildCommand: |
       # Install dependencies for the entire workspace
       pnpm install --no-frozen-lockfile
-      # Build the server (and any dependencies)
+      # Build the server
       cd server
       pnpm build
-    startCommand: cd server && pnpm start
+      # Verify the build output
+      ls -la dist/
+    startCommand: cd server && node dist/index.js
     plan: free
     envVars:
       - key: NODE_ENV
