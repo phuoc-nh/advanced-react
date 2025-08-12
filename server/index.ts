@@ -40,6 +40,11 @@ app.use(
 
 app.use("/uploads", express.static(join(process.cwd(), "public", "uploads")));
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 app.use(
   "/",
   trpcExpress.createExpressMiddleware({
@@ -48,4 +53,7 @@ app.use(
   }),
 );
 
-app.listen(3000);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});

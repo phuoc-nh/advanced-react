@@ -7,6 +7,7 @@ const envSchema = z.object({
   SERVER_BASE_URL: z.string(),
   AUTH_SECRET: z.string(),
   DATABASE_URL: z.string(),
+  PORT: z.string().optional(),
 });
 
 export const env = envSchema.parse(process.env);

@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: advanced-react-server
+    runtime: node
+    rootDir: ./server
+    buildCommand: |
+      cd ..
+      pnpm install --no-frozen-lockfile
+      cd server
+      pnpm build
+    startCommand: pnpm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_BASE_URL
+        value: https://your-client-app.onrender.com  # Update this after deploying client
+      - key: AUTH_SECRET
+        generateValue: true  # Render will generate a secure random value
+      - key: DATABASE_URL
+        value: postgresql://postgres.nefaqeabqubsxunxvbbt:y4D@MYU2@ia$2y@@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
+    healthCheckPath: /health

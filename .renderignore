@@ -1,0 +1,31 @@
+# Development files
+node_modules
+*.log
+.env
+.env.local
+.env.development
+.env.test
+
+# Build artifacts (will be built on Render)
+dist
+
+# IDE and OS files
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Test files
+*.test.ts
+*.test.js
+__tests__
+
+# Documentation
+README.md
+docs/
+
+# Other workspace packages (not needed for server deployment)
+client
+worker
+monitoring
+k8s
