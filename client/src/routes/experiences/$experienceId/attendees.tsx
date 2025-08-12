@@ -44,7 +44,7 @@ function ExperienceAttendeesPage() {
 		trpc.users.experienceAttendees.useSuspenseInfiniteQuery(
 			{ experienceId },
 			{
-				getNextPageParam: (lastPage) => lastPage.nextCursor,
+				getNextPageParam: (lastPage: any) => lastPage.nextCursor,
 			},
 		);
 

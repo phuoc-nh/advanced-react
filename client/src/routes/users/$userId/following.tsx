@@ -31,7 +31,7 @@ function UserFollowingPage() {
 		trpc.users.following.useSuspenseInfiniteQuery(
 			{ id: userId },
 			{
-				getNextPageParam: (lastPage) => lastPage.nextCursor,
+				getNextPageParam: (lastPage: any) => lastPage.nextCursor,
 			},
 		);
 

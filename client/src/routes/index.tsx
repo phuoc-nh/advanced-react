@@ -20,7 +20,7 @@ function Index() {
 	const [{ pages }, experienceQuery] = trpc.experiences.feed.useSuspenseInfiniteQuery( // tell react that this query is already called from route loader
 		{},
 		{
-			getNextPageParam: (lastPage) => lastPage.nextCursor,
+			getNextPageParam: (lastPage: any) => lastPage.nextCursor,
 		},
 	)
 

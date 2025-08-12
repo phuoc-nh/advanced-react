@@ -21,7 +21,6 @@ type CreateExperienceFormProps = {
 
 export function CreateExperienceForm({
 	onSuccess,
-	onCancel,
 }: CreateExperienceFormProps) {
 	const form = useForm<CreateExperienceFormData>({
 		resolver: zodResolver(experienceValidationSchema),

@@ -27,7 +27,7 @@ const app = express();
 
 app.use(cookieParser());
 
-app.use((req, res, next) => {
+app.use((__, _, next) => {
   setTimeout(next, Math.floor(Math.random() * 1000 + 100));
 });
 
