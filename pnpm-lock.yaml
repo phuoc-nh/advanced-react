@@ -288,7 +288,14 @@ importers:
         specifier: ^5.6.3
         version: 5.8.3
 
-  shared: {}
+  shared:
+    dependencies:
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
+      zod-form-data:
+        specifier: ^2.0.5
+        version: 2.0.7(zod@3.25.67)
 
   worker:
     dependencies:
