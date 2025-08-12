@@ -7,7 +7,7 @@ node_modules
 .env.test
 
 # Build artifacts (will be built on Render)
-dist
+server/dist
 
 # IDE and OS files
 .vscode
@@ -24,7 +24,7 @@ __tests__
 README.md
 docs/
 
-# Other workspace packages (not needed for server deployment)
+# Other workspace packages not needed for server deployment
 client
 worker
 monitoring

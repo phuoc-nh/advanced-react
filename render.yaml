@@ -2,13 +2,15 @@ services:
   - type: web
     name: advanced-react-server
     runtime: node
-    rootDir: ./server
+    # Deploy from the root directory to access all workspace packages
+    rootDir: ./
     buildCommand: |
-      cd ..
+      # Install dependencies for the entire workspace
       pnpm install --no-frozen-lockfile
+      # Build the server (and any dependencies)
       cd server
       pnpm build
-    startCommand: pnpm start
+    startCommand: cd server && pnpm start
     plan: free
     envVars:
       - key: NODE_ENV
