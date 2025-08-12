@@ -44,6 +44,7 @@ const customLink: TRPCLink<AppRouter> = () => {
 function getHeaders() {
   const queryKey = getQueryKey(trpc.auth.currentUser)
   const token = queryClient.getQueryData<{ accessToken: string }>(queryKey)?.accessToken;
+  console.log('getHeaders', token);
 
   return {
     Authorization: token ? `Bearer ${token}` : undefined,

@@ -112,6 +112,8 @@ export const authRouter = router({
         { expiresIn: "15m" },
       );
 
+      console.log("accessToken:", accessToken);
+
       return { accessToken, user };
     }),
 
