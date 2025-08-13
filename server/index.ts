@@ -53,6 +53,7 @@ app.use("/uploads", express.static(join(process.cwd(), "public", "uploads")));
 
 // Health check endpoint
 app.get("/health", (_, res) => {
+  console.log("Health check hit at", new Date().toISOString());
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
