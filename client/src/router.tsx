@@ -54,11 +54,12 @@ function getHeaders() {
   console.log("Token from cache:", token);
   console.log("Token length:", token ? token.length : 0);
 
-  const headers = {
-    Authorization: token ? `Bearer ${token}` : undefined,
-  };
+  const headers: Record<string, string> = {};
 
-  console.log("Final headers:", headers);
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  console.log("Headers to be sent:", headers);
   return headers;
 }
 

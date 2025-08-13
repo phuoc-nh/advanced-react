@@ -31,12 +31,23 @@ app.use((__, _, next) => {
   setTimeout(next, Math.floor(Math.random() * 1000 + 100));
 });
 
-app.use(
-  cors({
-    origin: env.CLIENT_BASE_URL,
-    credentials: true,
-  }),
-);
+// app.use(
+//   cors({
+//     origin: env.CLIENT_BASE_URL,
+//     credentials: true,
+//   }),
+// );
+
+app.use(cors({
+  origin: [
+    "https://advanced-react-client-iota.vercel.app", // Your production frontend
+    "http://localhost:5173", // Local development
+    "http://localhost:3000", // Alternative local port
+  ],
+  credentials: true, // 🔧 CRITICAL: Allows cookies in cross-origin requests
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 app.use("/uploads", express.static(join(process.cwd(), "public", "uploads")));
 
