@@ -42,15 +42,26 @@ const customLink: TRPCLink<AppRouter> = () => {
 };
 
 function getHeaders() {
-  const queryKey = getQueryKey(trpc.auth.currentUser)
-  console.log('getHeaders queryKey', queryKey);
-  const token = queryClient.getQueryData<{ accessToken: string }>(queryKey)?.accessToken;
-  console.log('getHeaders', token);
+  console.log("=== GET HEADERS DEBUG ===");
 
-  return {
+  const queryKey = getQueryKey(trpc.auth.currentUser);
+  console.log("Query Key:", queryKey);
+
+  const queryData = queryClient.getQueryData<{ accessToken: string }>(queryKey);
+  console.log("Query Data:", queryData);
+
+  const token = queryData?.accessToken;
+  console.log("Token from cache:", token);
+  console.log("Token length:", token ? token.length : 0);
+
+  const headers = {
     Authorization: token ? `Bearer ${token}` : undefined,
-  }
+  };
+
+  console.log("Final headers:", headers);
+  return headers;
 }
+
 
 export const trpcClient = trpc.createClient({
   links: [

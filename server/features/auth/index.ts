@@ -28,6 +28,7 @@ export const auth = {
 
   verifyToken: (token: string, options?: jwt.VerifyOptions) => {
     try {
+      console.log("Verifying token:", env.AUTH_SECRET);
       return jwt.verify(token, env.AUTH_SECRET, options) as TokenPayload;
     } catch {
       return false;

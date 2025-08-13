@@ -107,12 +107,18 @@ export const authRouter = router({
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
 
+      console.log("Cookie set with options:", {
+        httpOnly: true,
+        secure: true,
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      });
+
       const accessToken = auth.createToken(
         { refreshToken },
         { expiresIn: "15m" },
       );
 
-      console.log("accessToken:", accessToken);
+      console.log("login accessToken:", accessToken);
 
       return { accessToken, user };
     }),

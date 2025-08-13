@@ -20,9 +20,21 @@ export async function createContext(
     user: null as CurrentUser | null,
     accessToken: null as string | null,
   };
+  console.log("=== CREATE CONTEXT DEBUG ===");
+  console.log("Request URL:", opts.req.url);
+  console.log("Request Method:", opts.req.method);
+  console.log("All Headers:", JSON.stringify(opts.req.headers, null, 2));
+  console.log("All Cookies:", JSON.stringify(opts.req.cookies, null, 2));
+  console.log("Environment:", process.env.NODE_ENV);
 
   // Get authorization header
   const authHeader = opts.req.headers.authorization;
+  console.log("Authorization Header:", authHeader);
+
+  if (!authHeader) {
+    console.log("❌ No authorization header found");
+    return context;
+  }
 
   // If no authorization header, return
   if (!authHeader) {
@@ -31,7 +43,8 @@ export async function createContext(
 
   // Get token from authorization header
   const token = authHeader.split(" ")[1];
-  console.log("Token from header:", token);
+  console.log("Extracted Token:", token);
+  console.log("Token Length:", token ? token.length : 0);
   // Verify access token
   const accessTokenPayload = auth.verifyToken(token);
 
