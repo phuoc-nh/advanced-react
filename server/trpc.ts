@@ -23,95 +23,71 @@ export async function createContext(
   console.log("=== CREATE CONTEXT DEBUG ===");
   console.log("Request URL:", opts.req.url);
   console.log("Request Method:", opts.req.method);
-  console.log("All Headers:", JSON.stringify(opts.req.headers, null, 2));
-  console.log("All Cookies:", JSON.stringify(opts.req.cookies, null, 2));
+  console.log("Cookie Header:", opts.req.headers.cookie);
+  console.log("Parsed Cookies:", opts.req.cookies);
   console.log("Environment:", process.env.NODE_ENV);
 
   // Get authorization header
   const authHeader = opts.req.headers.authorization;
   console.log("Authorization Header:", authHeader);
 
-  if (!authHeader) {
-    console.log("❌ No authorization header found");
-    return context;
-  }
+  // 🔧 FIX: Try access token first, then fall back to refresh token
+  if (authHeader && authHeader !== "undefined") {
+    const token = authHeader.split(" ")[1];
+    console.log("Extracted Token:", token);
+    
+    const accessTokenPayload = auth.verifyToken(token);
+    console.log("Access Token Payload:", accessTokenPayload);
 
-  // If no authorization header, return
-  if (!authHeader) {
-    return context;
-  }
-
-  // Get token from authorization header
-  const token = authHeader.split(" ")[1];
-  console.log("Extracted Token:", token);
-  console.log("Token Length:", token ? token.length : 0);
-  // Verify access token
-  const accessTokenPayload = auth.verifyToken(token);
-  console.log("Access Token Payload:", accessTokenPayload);
-
-  if (!accessTokenPayload) {
-    // Get refresh token from cookies
-    const refreshToken = opts.req.cookies["refreshToken"];
-    console.log("refreshToken from cookies:", refreshToken);
-    // If no refresh token, return
-    if (!refreshToken) {
-      return context;
+    if (accessTokenPayload && accessTokenPayload.refreshToken) {
+      // Valid access token - get user from embedded refresh token
+      const refreshTokenPayload = auth.verifyToken(accessTokenPayload.refreshToken);
+      // const s = auth.verifyToken(refreshToken);
+      if (refreshTokenPayload && typeof refreshTokenPayload !== 'boolean' && refreshTokenPayload.userId) {
+        const user = await db.query.usersTable.findFirst({
+          where: eq(usersTable.id, refreshTokenPayload.userId),
+        });
+        
+        if (user) {
+          context.user = user;
+          console.log("✅ User authenticated via access token");
+          return context;
+        }
+      }
     }
+  }
 
-    // Verify refresh token
+  // 🔧 FIX: If access token failed/missing, try refresh token from cookies
+  const refreshToken = opts.req.cookies["refreshToken"];
+  console.log("refreshToken from cookies:", refreshToken);
+  
+  if (refreshToken) {
     const refreshTokenPayload = auth.verifyToken(refreshToken);
+    console.log("Refresh Token Payload:", refreshTokenPayload);
 
-    // If refresh token is invalid or no user id, return
-    if (!refreshTokenPayload || !refreshTokenPayload.userId) {
-      return context;
+    if (refreshTokenPayload && typeof refreshTokenPayload !== 'boolean' && refreshTokenPayload.userId) {
+      const user = await db.query.usersTable.findFirst({
+        where: eq(usersTable.id, refreshTokenPayload.userId),
+      });
+
+      if (user) {
+        // Create new access token
+        const accessToken = auth.createToken(
+          { refreshToken },
+          { expiresIn: "15m" },
+        );
+        
+        console.log("✅ User authenticated via refresh token, new access token created");
+        console.log("New access token:", accessToken);
+        
+        context.user = user;
+        context.accessToken = accessToken;
+        return context;
+      }
     }
-
-    // Get user from database
-    const user = await db.query.usersTable.findFirst({
-      where: eq(usersTable.id, refreshTokenPayload.userId),
-    });
-
-    // If user not found, return
-    if (!user) {
-      return context;
-    }
-
-    const accessToken = auth.createToken(
-      { refreshToken },
-      { expiresIn: "15m" },
-    );
-    console.log("accessToken with refreshToken:", accessToken);
-    context.user = user;
-    context.accessToken = accessToken;
-  } else {
-    // If no refresh token inside access token, return
-    if (!accessTokenPayload.refreshToken) {
-      return context;
-    }
-
-    const refreshTokenPayload = auth.verifyToken(
-      accessTokenPayload.refreshToken,
-    );
-
-    console.log("Refresh Token Payload else statement:", refreshTokenPayload);
-
-    // If refresh token is invalid or no user id, return
-    if (!refreshTokenPayload || !refreshTokenPayload.userId) {
-      return context;
-    }
-
-    const user = await db.query.usersTable.findFirst({
-      where: eq(usersTable.id, refreshTokenPayload.userId),
-    });
-
-    // If user not found, return
-    if (!user) {
-      return context;
-    }
-
-    context.user = user;
   }
 
+  console.log("❌ No valid authentication found");
   return context;
 }
 
