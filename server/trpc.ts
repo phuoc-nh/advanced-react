@@ -47,6 +47,7 @@ export async function createContext(
   console.log("Token Length:", token ? token.length : 0);
   // Verify access token
   const accessTokenPayload = auth.verifyToken(token);
+  console.log("Access Token Payload:", accessTokenPayload);
 
   if (!accessTokenPayload) {
     // Get refresh token from cookies
@@ -91,6 +92,8 @@ export async function createContext(
     const refreshTokenPayload = auth.verifyToken(
       accessTokenPayload.refreshToken,
     );
+
+    console.log("Refresh Token Payload else statement:", refreshTokenPayload);
 
     // If refresh token is invalid or no user id, return
     if (!refreshTokenPayload || !refreshTokenPayload.userId) {
