@@ -137,6 +137,8 @@ export const authRouter = router({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...cleanUser } = ctx.user;
 
+      console.log('currentUser:', cleanUser, ctx.accessToken);
+
       return { accessToken: ctx.accessToken, currentUser: cleanUser };
     }),
 

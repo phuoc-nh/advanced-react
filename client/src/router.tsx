@@ -43,6 +43,7 @@ const customLink: TRPCLink<AppRouter> = () => {
 
 function getHeaders() {
   const queryKey = getQueryKey(trpc.auth.currentUser)
+  console.log('getHeaders queryKey', queryKey);
   const token = queryClient.getQueryData<{ accessToken: string }>(queryKey)?.accessToken;
   console.log('getHeaders', token);
 
@@ -54,18 +55,6 @@ function getHeaders() {
 export const trpcClient = trpc.createClient({
   links: [
     customLink,
-    // httpBatchLink({ batch link combines multiple requests into a single https request, reducing latency and improving performance
-    // httpBatchLink does not support formData
-    // httpLink({
-    //   url: env.VITE_SERVER_BASE_URL,
-    //   fetch(url, options) {
-    //     return fetch(url, {
-    //       ...options,
-    //       credentials: "include",
-    //     });
-    //   },
-    //   headers: getHeaders(),
-    // }),
     // conditionally use httpLink or httpBatchLink based on the input type
     // if the input is normal JSON, use httpBatchLink
     // otherwise, use httpLink

@@ -31,14 +31,14 @@ export async function createContext(
 
   // Get token from authorization header
   const token = authHeader.split(" ")[1];
-
+  console.log("Token from header:", token);
   // Verify access token
   const accessTokenPayload = auth.verifyToken(token);
 
   if (!accessTokenPayload) {
     // Get refresh token from cookies
     const refreshToken = opts.req.cookies["refreshToken"];
-
+    console.log("refreshToken from cookies:", refreshToken);
     // If no refresh token, return
     if (!refreshToken) {
       return context;
@@ -66,7 +66,7 @@ export async function createContext(
       { refreshToken },
       { expiresIn: "15m" },
     );
-
+    console.log("accessToken with refreshToken:", accessToken);
     context.user = user;
     context.accessToken = accessToken;
   } else {
@@ -119,10 +119,11 @@ const t = initTRPC.context<Context>().create({
 
 // Create protected procedure
 const authMiddleware = t.middleware(({ next, ctx }) => {
+  console.log("authMiddleware - ctx.user", ctx.user);
   if (!ctx.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "Not authenticated",
+      message: "Not authenticated!!!",
     });
   }
 
