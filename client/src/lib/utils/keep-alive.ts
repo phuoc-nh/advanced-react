@@ -13,13 +13,12 @@ interface KeepAliveOptions {
 }
 
 export function startKeepAlive(options: KeepAliveOptions = {}) {
-  const { interval = 10 * 60 , immediate = true } = options; // Default 10 minutes
-  // 60 * 1000
+  const { interval = 5 * 60 * 1000, immediate = true } = options; // Default 5 minutes
   // Only run in production environment
-  // if (import.meta.env.DEV) {
-  //   console.log('🛌 Keep-alive disabled in development mode');
-  //   return;
-  // }
+  if (import.meta.env.DEV) {
+    console.log('🛌 Keep-alive disabled in development mode');
+    return;
+  }
 
   // Don't start multiple intervals
   if (keepAliveInterval) {
